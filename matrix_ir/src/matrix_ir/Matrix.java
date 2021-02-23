@@ -5,8 +5,6 @@ import java.util.stream.IntStream;
 
 /**
  * Each instance of this class represents a matrix (from algebra).
- * 
- * @immutable
  */
 public class Matrix {
 	
@@ -43,11 +41,15 @@ public class Matrix {
 	
 	/**
 	 * @post | result == getElementsAsRowArrays().length
+	 * 
+	 * @immutable
 	 */
 	public int getNbRows() { return nbRows; }
 	
 	/**
 	 * @post | result == getElementsAsRowArrays()[0].length
+	 * 
+	 * @immutable
 	 */
 	public int getNbColumns() { return nbColumns; }
 	
@@ -112,6 +114,9 @@ public class Matrix {
 	}
 	
 	/**
+	 * @inspects | this
+	 * @creates | result
+	 * 
 	 * @post | result != null
 	 * @post | result.getNbRows() == getNbRows()
 	 * @post | result.getNbColumns() == getNbColumns()
@@ -126,7 +131,19 @@ public class Matrix {
 	}
 	
 	/**
-	 * @inspects | other
+	 * @mutates | this
+	 * 
+	 * @post | IntStream.range(0, getNbRows() * getNbColumns()).allMatch(i ->
+	 *       |     getElementsRowMajor()[i] == old(getElementsRowMajor())[i] * scaleFactor)
+	 */
+	public void scale(double scaleFactor) {
+		for (int i = 0; i < elements.length; i++)
+			elements[i] *= scaleFactor;
+	}
+	
+	/**
+	 * @inspects | this, other
+	 * @creates | result
 	 * 
 	 * @pre | other != null
 	 * @pre | other.getNbRows() == getNbRows()
@@ -143,6 +160,22 @@ public class Matrix {
 		for (int i = 0; i < resultElements.length; i++)
 			resultElements[i] = elements[i] + other.elements[i];
 		return new Matrix(nbRows, nbColumns, resultElements);
+	}
+	
+	/**
+	 * @mutates | this
+	 * @inspects | other
+	 *
+	 * @pre | other != null
+	 * @pre | other.getNbRows() == getNbRows()
+	 * @pre | other.getNbColumns() == getNbColumns()
+	 * 
+	 * @post | IntStream.range(0, getNbRows() * getNbColumns()).allMatch(i ->
+	 *       |     getElementsRowMajor()[i] == old(getElementsRowMajor())[i] + other.getElementsRowMajor()[i])
+	 */
+	public void add(Matrix other) {
+		for (int i = 0; i < elements.length; i++)
+			elements[i] += other.elements[i];
 	}
 	
 }
