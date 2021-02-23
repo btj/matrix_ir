@@ -37,7 +37,7 @@ public class Matrix {
 		double[][] result = new double[nbRows][nbColumns];
 		for (int rowIndex = 0; rowIndex < nbRows; rowIndex++)
 			for (int columnIndex = 0; columnIndex < nbColumns; columnIndex++)
-				result[rowIndex][columnIndex] = elements[rowIndex * nbColumns + columnIndex];
+				result[rowIndex][columnIndex] = elements[columnIndex * nbRows + rowIndex];
 		return result;
 	}
 	
@@ -64,7 +64,11 @@ public class Matrix {
 	 * @creates | result
 	 */
 	public double[] getElementsRowMajor() {
-		return elements.clone();
+		double[] result = new double[nbRows * nbColumns];
+		for (int rowIndex = 0; rowIndex < nbRows; rowIndex++)
+			for (int columnIndex = 0; columnIndex < nbColumns; columnIndex++)
+				result[rowIndex * nbColumns + columnIndex] = elements[columnIndex * nbRows + rowIndex];
+		return result;
 	}
 	
 	/**
@@ -76,12 +80,8 @@ public class Matrix {
 	 * 
 	 * @creates | result
 	 */
-	public double[] getElementsColumnMajor() { 
-		double[] result = new double[nbRows * nbColumns];
-		for (int rowIndex = 0; rowIndex < nbRows; rowIndex++)
-			for (int columnIndex = 0; columnIndex < nbColumns; columnIndex++)
-				result[columnIndex * nbRows + rowIndex] = elements[rowIndex * nbColumns + columnIndex];
-		return result;
+	public double[] getElementsColumnMajor() {
+		return elements.clone();
 	}
 	
 	/**
@@ -108,7 +108,16 @@ public class Matrix {
 		
 		this.nbRows = nbRows;
 		this.nbColumns = nbColumns;
-		this.elements = elementsRowMajor.clone();
+		this.elements = new double[nbRows * nbColumns];
+		for (int rowIndex = 0; rowIndex < nbRows; rowIndex++)
+			for (int columnIndex = 0; columnIndex < nbColumns; columnIndex++)
+				elements[columnIndex * nbRows + rowIndex] = elementsRowMajor[rowIndex * nbColumns + columnIndex];
+	}
+	
+	private Matrix(int nbRows, int nbColumns, double[] elementsColumnMajor, Void dummy) {
+		this.nbRows = nbRows;
+		this.nbColumns = nbColumns;
+		this.elements = elementsColumnMajor;
 	}
 	
 	/**
@@ -122,7 +131,7 @@ public class Matrix {
 		double[] resultElements = new double[elements.length];
 		for (int i = 0; i < resultElements.length; i++)
 			resultElements[i] = elements[i] * scaleFactor;
-		return new Matrix(nbRows, nbColumns, resultElements);
+		return new Matrix(nbRows, nbColumns, resultElements, null);
 	}
 	
 	/**
@@ -142,7 +151,7 @@ public class Matrix {
 		double[] resultElements = new double[elements.length];
 		for (int i = 0; i < resultElements.length; i++)
 			resultElements[i] = elements[i] + other.elements[i];
-		return new Matrix(nbRows, nbColumns, resultElements);
+		return new Matrix(nbRows, nbColumns, resultElements, null);
 	}
 	
 }
